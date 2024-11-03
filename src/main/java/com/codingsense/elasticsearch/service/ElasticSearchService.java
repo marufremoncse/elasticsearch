@@ -47,4 +47,18 @@ public class ElasticSearchService {
 		
 		return searchResponse;
 	}
+	
+	public SearchResponse<Product> getSearchResponseForProductsWithField(String fieldName){
+		Supplier<Query> supplier = ElasticSearchUtil.supplierWithNameField(fieldName);
+		SearchResponse<Product> searchResponse = null;
+		try {
+			searchResponse = elasticsearchClient.search(s -> s.index("products").query(supplier.get()), Product.class);
+			System.out.println("MatchQueryForProducts: " + supplier.get());
+			System.out.println("Search Response for products with field: " + searchResponse);
+		} catch (ElasticsearchException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		return searchResponse;
+	}
 }

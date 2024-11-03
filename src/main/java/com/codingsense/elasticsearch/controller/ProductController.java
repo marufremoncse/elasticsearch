@@ -71,4 +71,12 @@ public class ProductController {
 		  List<Product> listOfProducts = listOfHits.stream().map(q -> q.source()).collect(Collectors.toCollection(ArrayList::new));
 		  return listOfProducts;
 	}
+	
+	@GetMapping("match-products-with-name/{name}")
+	public List<Product> matchProductsWithListName(@PathVariable String name) {
+		SearchResponse<Product> searchResponseForProducts = elasticSearchService.getSearchResponseForProductsWithField(name);
+		List<Hit<Product>> listOfHits = searchResponseForProducts.hits().hits();
+		List<Product> listOfProducts = listOfHits.stream().map(q -> q.source()).collect(Collectors.toCollection(ArrayList::new));
+		return listOfProducts;
+	}
 }
