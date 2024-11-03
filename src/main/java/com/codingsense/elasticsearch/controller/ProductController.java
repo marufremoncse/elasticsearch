@@ -1,7 +1,11 @@
 package com.codingsense.elasticsearch.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +23,7 @@ import com.codingsense.elasticsearch.service.ElasticSearchService;
 import com.codingsense.elasticsearch.service.ProductService;
 
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 
 @RestController
 @RequestMapping("products")
@@ -60,7 +65,10 @@ public class ProductController {
 	}
 	
 	@GetMapping("match-all-products")
-	public String matchAllProducts() {
-		return elasticSearchService.getSearchResponse().toString();
+	public List<Product> matchAllProducts() {
+		  SearchResponse<Product> searchResponseForProducts = elasticSearchService.getSearchResponseForProducts();
+		  List<Hit<Product>> listOfHits = searchResponseForProducts.hits().hits();
+		  List<Product> listOfProducts = listOfHits.stream().map(q -> q.source()).collect(Collectors.toCollection(ArrayList::new));
+		  return listOfProducts;
 	}
 }
